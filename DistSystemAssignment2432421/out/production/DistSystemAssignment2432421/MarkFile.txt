@@ -1,0 +1,10 @@
+Record from ring node on host Blade, host ID one, is Thu Nov 22 21:18:57 GMT 2018
+Record from ring node on host Blade, host ID two, is Thu Nov 22 21:19:00 GMT 2018
+Record from ring node on host Blade, host ID one, is Thu Nov 22 21:19:03 GMT 2018
+Record from ring node on host Blade, host ID two, is Thu Nov 22 21:19:06 GMT 2018
+Record from ring node on host Blade, host ID one, is Thu Nov 22 21:19:10 GMT 2018
+Record from ring node on host Blade, host ID two, is Thu Nov 22 21:19:13 GMT 2018
+Record from ring node on host Blade, host ID one, is Thu Nov 22 21:19:16 GMT 2018
+Record from ring node on host Blade, host ID two, is Thu Nov 22 21:19:19 GMT 2018
+Record from ring node on host Blade, host ID one, is Thu Nov 22 21:19:22 GMT 2018
+Record from ring node on host Blade, host ID two, is Thu Nov 22 21:19:25 GMT 2018
