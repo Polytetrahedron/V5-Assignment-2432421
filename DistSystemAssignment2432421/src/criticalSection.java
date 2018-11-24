@@ -33,8 +33,10 @@ public class criticalSection extends Thread
         this.customFilename = customFilename;
     }
 
+    //******************************************************************************************
+
     /**
-     * Constructor for killing the nodes
+     * Constructor for killing the nodes via critical section
      *
      * @param killToken
      */
@@ -55,16 +57,11 @@ public class criticalSection extends Thread
      */
     public void run()
     {
-        if(checkForKillToken())
-        {
-            return;
-        }
-        else
+        if(!checkForKillToken())
         {
             token.setPassCounter(); //signals to the token it has been passed and increments its counter
 
-
-            if(token.setSkips(this_id)) //check to see if the current node needs to skip its processing time
+            if(!token.setSkips(this_id)) //check to see if the current node needs to skip its processing time
             {
                 checkTokenProperties();
                 criticalOperation();
@@ -81,8 +78,10 @@ public class criticalSection extends Thread
         }
     }//end method run
 
+    //******************************************************************************************
+
     /**
-     * This method checks to see if the current token is a kill token
+     * This method checks to see if the current token is a kill token.
      * If it is a kill token it maps the current node ID to the network map and passes the token
      * to the next node in the chain. If the node detects that it is in the mapped list
      * then the node terminates itself and passes the token. This pass only happens if the
@@ -125,7 +124,7 @@ public class criticalSection extends Thread
     /**
      * This is an implementation of the Token Expiry TTL in TOTAL network circulations.
      * In order for the token to expire it must pass through the start node for the
-     * specified TTL length
+     * specified TTL length. This takes significantly.
      */
     private void checkExpiryCirculations()
     {

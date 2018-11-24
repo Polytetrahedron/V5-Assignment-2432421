@@ -93,12 +93,6 @@ public class Token implements Serializable
 
     public boolean checkLastNodeStatus()
     {
-//        if(visitedNodes.size() == 1 || visitedNodes.isEmpty())
-//        {
-//            System.out.println(visitedNodes.size());
-//            return true;
-//        }
-//        return false;
         return visitedNodes.isEmpty();
     }
 
