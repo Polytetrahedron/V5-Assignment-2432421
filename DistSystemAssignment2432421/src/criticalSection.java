@@ -20,9 +20,8 @@ public class criticalSection extends Thread
      * @param n_host
      * @param n_id
      * @param token
-     * @param customFilename
      */
-    public criticalSection(String t_host, String t_id, String n_host, String n_id, Token token, String customFilename)
+    public criticalSection(String t_host, String t_id, String n_host, String n_id, Token token)
     {
         
         this_host =t_host;
@@ -33,7 +32,9 @@ public class criticalSection extends Thread
         this.customFilename = customFilename;
     }
 
+
     //******************************************************************************************
+
 
     /**
      * Constructor for killing the nodes via critical section
@@ -51,9 +52,12 @@ public class criticalSection extends Thread
 
     //******************************************************************************************
 
+
     /**
      * This is the thread run method that increments the pass counter and handles the running of
      * the critical section processing as well as passing the token to the next node in the chain.
+     * This also deals with the termination of the network by scanning incoming tokens for their type
+     * if it is a kill token it handles this in the checkForKillToken method.
      */
     public void run()
     {
@@ -78,7 +82,9 @@ public class criticalSection extends Thread
         }
     }//end method run
 
+
     //******************************************************************************************
+
 
     /**
      * This method checks to see if the current token is a kill token.
@@ -92,59 +98,61 @@ public class criticalSection extends Thread
     {
         if(token.checkKillToken())
         {
-            System.out.println(token.checkKillToken());
             if(!token.getVisitedNodes(this_id))
             {
-                token.addCurrentNode(this_id);
-                System.out.println("Passing added token");
-                passToken();
+                token.addCurrentNode(this_id); //add the current node to the map
+                System.out.println("Passing mapped token");
+                passToken(); //pass token down the chain
                 return true;
             }
             else
             {
-                if(token.checkLastNodeStatus())
+                if(token.checkLastNodeStatus()) //check to see if this node is the last node
                 {
                     System.out.println("\nLAST NODE IS CHAIN: Kill token received, terminating node...");
-                    System.exit(0);
+                    System.exit(0); //kill node
                 }
-                else
+                else //if it's not the last node
                 {
                     System.out.println("\nKill token received, terminating node...");
-                    passToken();
-                    System.exit(0);
+                    passToken(); //pass to next node in chain
+                    System.exit(0);//kill node
                 }
             }
         }
         return false;
-    }
+    }//end of method checkForKillToken
 
 
     //******************************************************************************************
 
+
     /**
      * This is an implementation of the Token Expiry TTL in TOTAL network circulations.
      * In order for the token to expire it must pass through the start node for the
-     * specified TTL length. This takes significantly.
+     * specified TTL length. This takes significantly longer than the hop based approach.
      */
     private void checkExpiryCirculations()
     {
         //This is TTL implemented via number of TOTAL network circulations
         if(token.getStartNodeID().equals(this_id))
         {
-            token.setCirculations();
+            token.setCirculations(); //increment the total circulations
         }
         if(token.getCirculations() != token.getTTL()) //checking to see if the token should expire
         {
-            passToken();
+            passToken(); //pass token if there is still life
         }
         else
         {
             System.out.println("Token expired TTL reached: " + token.getTTL());
             token = null; //drop the token
         }
-    }
+    }//end method checkExpiryCirculations
+
 
     //******************************************************************************************
+
 
     /**
      * This is the token expiry implemented via number of hops, i.e. the number of times
@@ -164,9 +172,11 @@ public class criticalSection extends Thread
             System.out.println("Token expired TTL reached: " + token.getTTL() + " token dropped"); //print to use that the token has been dropped
             token = null; //drop the token
         }
-    }
+    }//end method checkExpiryHops
+
 
     //******************************************************************************************
+
 
     /**
      * This checks the data on the received token and modifies the properties
@@ -180,7 +190,9 @@ public class criticalSection extends Thread
         }
     }//end method checkToken
 
+
     //******************************************************************************************
+
 
     /**
      * This is the "processing" code for the critical section. It writes to a file specified via
@@ -192,7 +204,7 @@ public class criticalSection extends Thread
         try {
             System.out.println("######################################\n");
             System.out.println("Entering critical sections " + this_host + "/" + this_id);
-            System.out.println("Writing to file: " + customFilename +".txt" );
+            System.out.println("Writing to file: " + token.getCustomFileName() +".txt" );
 
             //getting timestamp for data write
             Date timestmp = new Date() ;
@@ -200,7 +212,7 @@ public class criticalSection extends Thread
             String timestamp = timestmp.toString() ;
 
             //file and print writer instantiation
-            FileWriter fw_id = new FileWriter(customFilename + ".txt",true); //writing to custom named file
+            FileWriter fw_id = new FileWriter(token.getCustomFileName() + ".txt",true); //writing to custom named file
             PrintWriter pw_id = new PrintWriter(fw_id, true) ;
 
             //data to be written into the file
@@ -222,7 +234,9 @@ public class criticalSection extends Thread
         }
     }//end method criticalOperation
 
+
     //******************************************************************************************
+
 
     /**
      * This method contains the code for passing the token to another node in the network

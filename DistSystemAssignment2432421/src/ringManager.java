@@ -8,7 +8,6 @@ public class ringManager
      * and creates a new Token object. It then attempts to pass the token to the node. This
      * will cause the nodes to begin passing the token between them. The manager shuts down
      * after this operation has completed.
-     * Injection point is the first node the token is passed to.
      *
      * @param ring_node_host The host at injection point
      * @param ring_node_id The ID of the host at injection point
@@ -23,35 +22,49 @@ public class ringManager
        System.setSecurityManager(new SecurityManager()); // Setting the security manager
 
        clearFile(customFilename); //Clearing/creating a file for use as a shared resource
+
+       //token instantiated with cmd arguments
        Token token = new Token(TTL, extraTImeNode, ring_node_id, skipHost, customFilename);
-       sendToInjectionPoint(token, ring_node_host, ring_node_id);
+
+       sendToInjectionPoint(token, ring_node_host, ring_node_id); //sending the token to the network
 
        System.out.println("Connecting to Node" + ring_node_host + "/" + ring_node_id); //user diagnostic output
    }//end constructor rindManager
 
+
     //******************************************************************************************
 
+
     /**
+     * This is an overloaded constructor that instantiates a "killManager", this is
+     * a ringManager that creates a killToken to send to the network indicating that
+     * it is to terminate.
      *
-     * @param ring_node_host
-     * @param ring_node_id
-     * @param killToken
+     * @param ring_node_host The host at injection point
+     * @param ring_node_id The ID of the host at injection point
+     * @param killToken The value of the killToken (This will always be TRUE if this constructor is called)
      */
     public ringManager(String ring_node_host, String ring_node_id, boolean killToken)
     {
         System.setSecurityManager(new SecurityManager()); // Setting the security manager
 
-        Token token = new Token(killToken);
-        sendToInjectionPoint(token, ring_node_host, ring_node_id);
-        System.out.println("Kill token passed to network");
+        Token token = new Token(killToken); //creating a kill token
+
+        sendToInjectionPoint(token, ring_node_host, ring_node_id); //sending token to network
+
+        System.out.println("\nKill token passed to network");
     }
 
 
+    //******************************************************************************************
+
+
     /**
+     * This method creates a reference to the remote node and passes a token to it via RMI
      *
-     * @param token
-     * @param ring_node_host
-     * @param ring_node_id
+     * @param token The token to pass to the node network
+     * @param ring_node_host The host at injection point
+     * @param ring_node_id The ID of the host at injection point
      */
     private void sendToInjectionPoint(Token token, String ring_node_host, String ring_node_id)
     {
@@ -65,13 +78,14 @@ public class ringManager
         }
         catch(Exception e)
         {
-            System.out.println("Error! Oh no!");
-            e.printStackTrace();
+            System.out.println("Node unavailable please try again...");
         }
 
-    }
+    }//end method sendToInjectionPoint
+
 
     //******************************************************************************************
+
 
     /**
      * Main method of ringManager takes in cmd arguments and instantiates the ringManager object
@@ -81,17 +95,21 @@ public class ringManager
      */
    public static void main(String argv[])
    {
-       //values passed via command line
+       //Host Identifiers
        String ring_host; //host at injection point
        String ring_id; // ID of host at injection point
-       String customFilename; //custom file name for shared resource
-       int TTL; //TTL of token
        String extraTimeHost; //ID of host defined to get extra processing time
        String skipHost; //ID of host defined to skip every second turn
-       boolean killNetwork;
+
+       //Token behaviour parameters
+       String customFilename; //custom file name for shared resource
+       int TTL; //TTL of token (Time To Live)
+
+       //Kill token definition
+       boolean killNetwork; //defines a killToken
 
        //This performs rudimentary validation on incoming arguments
-       if(argv.length == 3 && argv[2].toLowerCase().equals("true"))
+       if(argv.length == 3 && argv[2].toLowerCase().equals("true")) //3rd argument must == true to create a kill token
        {
            ring_host = argv[0];
            ring_id = argv[1];
@@ -119,14 +137,16 @@ public class ringManager
        }
    }//end method main
 
+
     //******************************************************************************************
+
 
     /**
      * This methods cleans specified file before circulating it as a shared resource.
-     * If a no file matching the name pass into it is found this creates a new file
+     * If is no file matching the name pass into it is found this creates a new file
      * under that name.
      *
-     * @param customFilename The name of the file
+     * @param customFilename The name of the shared file
      */
    private void clearFile(String customFilename)
    {
