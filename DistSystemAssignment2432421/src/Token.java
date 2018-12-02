@@ -1,23 +1,28 @@
 import java.io.Serializable;
 import java.util.ArrayList;
 
+//*******************************************************************
+//  Class: Token
+//  Desc: This class holds all of the Tokens properties for use by
+//        the nodes in the network
+//  @author 2432421
+//*******************************************************************
 public class Token implements Serializable
 {
     //Token characteristics
     private int passCounter = 0;
     private ArrayList<String> visitedNodes = new ArrayList<>();
     private boolean killNode = false;
-
+    private int circulations;
+    private int skips = 0;
+    private int extraTimeGiven = 6000;
 
     //Command line arguments
-    private int TTL;
+    private int TTL; //TTL of the token
     private String startNodeID; //this enables the token to detect when it as completed a cycle on the network
-    private String extraTimeHost;
-    private int extraTimeGiven = 6000; //double the time in critical section
-    private int circulations; //this needs implemented properly
-    private String skipNode;
-    private int skips = 0;
-    private String customFileName;
+    private String extraTimeHost; //ID of host designated for extra time
+    private String skipNode; //ID of host skipping every second turn
+    private String customFileName; //name of shared resource
 
 
 
@@ -37,20 +42,22 @@ public class Token implements Serializable
         this.startNodeID = startNodeID;
         this.skipNode = skipNode;
         this.customFileName = customFileName;
-    }
+
+    }//end of constructor Token
 
     /**
      * This is an overloaded constructor that creates a kill token. This will terminate all nodes on the current network.
      *
-     * @param killNode Indicates the type of token it is (kill token) this will always be true
+     * @param killNode Indicates the type of token it is (kill token) this will always be true if this is created
      */
     public Token(boolean killNode)
     {
-        this.killNode = killNode; //sets local killNode to true
-    }
+        this.killNode = killNode; //sets local killNode variable to true
+
+    }//end of constructor Token (killNode)
 
 
-    //**************The section below contains the code that enables the skip processing functionality********
+    //**************The section below contains the code that enables the skip processing behaviour*********
 
     /**
      * This allows a host to skip its processing time using the token every second pass

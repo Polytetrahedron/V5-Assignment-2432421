@@ -1,6 +1,12 @@
 import java.rmi.*;
 import java.io.*;
-
+//*******************************************************************
+//  Class: ringManager
+//  Desc: This class instantiates a ringManager object that is used to
+//        either create a new token or a new kill token and pass it to the
+//        network.
+//  @author 2432421
+//*******************************************************************
 public class ringManager
 {
     /**
@@ -29,7 +35,7 @@ public class ringManager
        sendToInjectionPoint(token, ring_node_host, ring_node_id); //sending the token to the network
 
        System.out.println("Connecting to Node" + ring_node_host + "/" + ring_node_id); //user diagnostic output
-   }//end constructor rindManager
+   }//end constructor ringManager (standard)
 
 
     //******************************************************************************************
@@ -52,8 +58,8 @@ public class ringManager
 
         sendToInjectionPoint(token, ring_node_host, ring_node_id); //sending token to network
 
-        System.out.println("\nKill token passed to network");
-    }
+        System.out.println("\nKill token passed to network"); //user diagnostic printout
+    }//end of constructor ringManager (killToken)
 
 
     //******************************************************************************************
@@ -106,7 +112,7 @@ public class ringManager
        int TTL; //TTL of token (Time To Live)
 
        //Kill token definition
-       boolean killNetwork; //defines a killToken
+       boolean killNetwork; //true means killToken
 
        //This performs rudimentary validation on incoming arguments
        if(argv.length == 3 && argv[2].toLowerCase().equals("true")) //3rd argument must == true to create a kill token
@@ -125,15 +131,24 @@ public class ringManager
        }
        else
        {
-           ring_host = argv[0];
-           ring_id = argv[1];
-           customFilename = argv[2];
-           TTL = Integer.parseInt(argv[3]);
-           extraTimeHost = argv[4];
-           skipHost = argv[5];
+           try
+           {
+               //Assigning cmd arguments to variables
+               ring_host = argv[0];
+               ring_id = argv[1];
+               customFilename = argv[2];
+               TTL = Integer.parseInt(argv[3]);
+               extraTimeHost = argv[4];
+               skipHost = argv[5];
 
-           //ringManager object to kick-start the network
-           ringManager manager = new ringManager(ring_host, ring_id, customFilename, TTL, extraTimeHost, skipHost);
+               //ringManager object to kick-start the network
+               ringManager manager = new ringManager(ring_host, ring_id, customFilename, TTL, extraTimeHost, skipHost);
+           }catch(Exception e)
+           {
+               System.out.println("Data capture error!");
+               System.exit(0);
+           }
+
        }
    }//end method main
 
@@ -142,7 +157,7 @@ public class ringManager
 
 
     /**
-     * This methods cleans specified file before circulating it as a shared resource.
+     * This methods "cleans" specified file before circulating it as a shared resource.
      * If is no file matching the name pass into it is found this creates a new file
      * under that name.
      *

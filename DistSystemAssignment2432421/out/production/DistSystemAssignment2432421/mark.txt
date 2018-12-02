@@ -1,5 +1,10 @@
-Record from ring node on host Blade, host ID one, is Thu Nov 22 20:45:19 GMT 2018
-Record from ring node on host Blade, host ID two, is Thu Nov 22 20:45:22 GMT 2018
-Record from ring node on host Blade, host ID one, is Thu Nov 22 20:45:25 GMT 2018
-Record from ring node on host Blade, host ID two, is Thu Nov 22 20:45:28 GMT 2018
-Record from ring node on host Blade, host ID one, is Thu Nov 22 20:45:32 GMT 2018
+Record from ring node on host Blade, host ID one, is Fri Nov 30 17:39:08 GMT 2018 Pass count: 1
+Record from ring node on host Blade, host ID two, is Fri Nov 30 17:39:11 GMT 2018 Pass count: 2
+Record from ring node on host Blade, host ID three, is Fri Nov 30 17:39:17 GMT 2018 Pass count: 3
+Record from ring node on host Blade, host ID one, is Fri Nov 30 17:39:20 GMT 2018 Pass count: 4
+Record from ring node on host Blade, host ID three, is Fri Nov 30 17:39:23 GMT 2018 Pass count: 6
+Record from ring node on host Blade, host ID one, is Fri Nov 30 17:39:26 GMT 2018 Pass count: 7
+Record from ring node on host Blade, host ID two, is Fri Nov 30 17:39:29 GMT 2018 Pass count: 8
+Record from ring node on host Blade, host ID three, is Fri Nov 30 17:39:35 GMT 2018 Pass count: 9
+Record from ring node on host Blade, host ID one, is Fri Nov 30 17:39:38 GMT 2018 Pass count: 10
+Record from ring node on host Blade, host ID three, is Fri Nov 30 17:39:41 GMT 2018 Pass count: 12

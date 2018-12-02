@@ -2,35 +2,43 @@ import java.io.*;
 import java.rmi.*;
 import java.util.*;
 
+//*******************************************************************
+//  Class: criticalSection
+//  Desc: This class performs processing in a text file and
+//        passes the token to the next node in the networks
+//  @author 2432421
+//*******************************************************************
 public class criticalSection extends Thread
 {
+    //class level variables
     private String  this_id;
     private String  this_host;
     private String  next_id;
     private String  next_host;
     private Token token;
-    private String customFilename;
     private int timeInCSection = 3000;
 
     /**
-     * Constructor for instantiating the criticalSection
+     * Constructor for instantiating the criticalSection thread
+     * This will perform standard processing i.e writing to the text file, skipping processing,
+     * extra time in critical section.
      *
-     * @param t_host
-     * @param t_id
-     * @param n_host
-     * @param n_id
-     * @param token
+     * @param t_host The current host
+     * @param t_id The current host ID
+     * @param n_host The next host
+     * @param n_id The next host ID
+     * @param token The token
      */
     public criticalSection(String t_host, String t_id, String n_host, String n_id, Token token)
     {
-        
+        //Assigning parameters to class level variables
         this_host =t_host;
         this_id = t_id;
         next_host = n_host;
         next_id = n_id;
         this.token = token;
-        this.customFilename = customFilename;
-    }
+
+    }//end of constructor criticalSection
 
 
     //******************************************************************************************
@@ -39,15 +47,17 @@ public class criticalSection extends Thread
     /**
      * Constructor for killing the nodes via critical section
      *
-     * @param killToken
+     * @param killToken The specialized token for shutting down the network
      */
     public criticalSection(Token killToken, String next_host, String next_id, String this_id)
     {
+        //Assigning parameters to class level variables
         this.next_host = next_host;
         this.next_id = next_id;
         this.token = killToken;
         this.this_id = this_id;
-    }
+
+    }//end of constructor (kilToken)
 
 
     //******************************************************************************************
@@ -57,11 +67,11 @@ public class criticalSection extends Thread
      * This is the thread run method that increments the pass counter and handles the running of
      * the critical section processing as well as passing the token to the next node in the chain.
      * This also deals with the termination of the network by scanning incoming tokens for their type
-     * if it is a kill token it handles this in the checkForKillToken method.
+     * if it is a kill token then behaviour is handled via the checkForKillToken method.
      */
     public void run()
     {
-        if(!checkForKillToken())
+        if(!checkForKillToken()) //check that the token received isn't a kill token
         {
             token.setPassCounter(); //signals to the token it has been passed and increments its counter
 
@@ -92,13 +102,13 @@ public class criticalSection extends Thread
      * to the next node in the chain. If the node detects that it is in the mapped list
      * then the node terminates itself and passes the token. This pass only happens if the
      * token is not the last node in the network.
-     * @return
+     * @return true if the node is a kill token and false if not
      */
     private boolean checkForKillToken()
     {
-        if(token.checkKillToken())
+        if(token.checkKillToken()) //if this token is a kill token
         {
-            if(!token.getVisitedNodes(this_id))
+            if(!token.getVisitedNodes(this_id)) //if this node has not been visited before
             {
                 token.addCurrentNode(this_id); //add the current node to the map
                 System.out.println("Passing mapped token");
@@ -109,7 +119,7 @@ public class criticalSection extends Thread
             {
                 if(token.checkLastNodeStatus()) //check to see if this node is the last node
                 {
-                    System.out.println("\nLAST NODE IS CHAIN: Kill token received, terminating node...");
+                    System.out.println("\nLAST NODE IN NETWORK: Kill token received, terminating node...");
                     System.exit(0); //kill node
                 }
                 else //if it's not the last node
@@ -120,7 +130,7 @@ public class criticalSection extends Thread
                 }
             }
         }
-        return false;
+        return false; //if not a kill token
     }//end of method checkForKillToken
 
 
@@ -134,8 +144,7 @@ public class criticalSection extends Thread
      */
     private void checkExpiryCirculations()
     {
-        //This is TTL implemented via number of TOTAL network circulations
-        if(token.getStartNodeID().equals(this_id))
+        if(token.getStartNodeID().equals(this_id) && token.getPassCounter() != 0) //if the node is the start node
         {
             token.setCirculations(); //increment the total circulations
         }
@@ -184,9 +193,9 @@ public class criticalSection extends Thread
      */
     private void checkTokenProperties()
     {
-        if(token.getExtraTimeHost().equals(this_id))
+        if(token.getExtraTimeHost().equals(this_id)) //if this host gets extra time
         {
-            timeInCSection = token.getExtraTimeGiven();
+            timeInCSection = token.getExtraTimeGiven(); //give it the standard extra time amount
         }
     }//end method checkToken
 
@@ -196,8 +205,7 @@ public class criticalSection extends Thread
 
     /**
      * This is the "processing" code for the critical section. It writes to a file specified via
-     * the token, then increments the hop counter. This methods uses a FileWriter to write to the
-     * specified file.
+     * the token. This methods uses a FileWriter to write to the specified file.
      */
     private void criticalOperation()
     {
@@ -208,17 +216,18 @@ public class criticalSection extends Thread
 
             //getting timestamp for data write
             Date timestmp = new Date() ;
-            System.out.println("Token counter: " + token.getPassCounter()); //print number of hops
+            System.out.println("Token counter: " + token.getPassCounter()); //print number of passes/hops
             String timestamp = timestmp.toString() ;
 
             //file and print writer instantiation
             FileWriter fw_id = new FileWriter(token.getCustomFileName() + ".txt",true); //writing to custom named file
             PrintWriter pw_id = new PrintWriter(fw_id, true) ;
 
-            //data to be written into the file
-            pw_id.println ("Record from ring node on host " + this_host + ", host ID " +this_id+ ", is " +timestamp);
-            pw_id.close() ;
-            fw_id.close() ;
+            //data to be written into the file, records the host and ID of node as well as timestamp of visit
+            pw_id.println ("Record from ring node on host " + this_host + ", host ID " +this_id+ ", is " +timestamp +
+                            " Pass count: " + token.getPassCounter());
+            pw_id.close() ; //closing FileWriter
+            fw_id.close() ; //closing PrintWriter
         }
         catch (java.io.IOException e)
         {
@@ -244,16 +253,20 @@ public class criticalSection extends Thread
      * that nodes take token method.
      *
      * This method is only called when the current node has completed its critical section or
-     * a kill token has been passed to the node
+     * a kill token has been passed to the node.
      */
     private void passToken()
     {
         try
         {
             System.out.println("Performing token pass to: " + next_host + "/" + next_id);
+
+            //get reference to remote host
+
             ringMember nextNode = (ringMember)Naming.lookup("rmi://" + next_host + "/" + next_id);
-            nextNode.takeToken(token);
-            System.out.println("Token released \n");
+            nextNode.takeToken(token); //perform token pass
+
+            System.out.println("Token released \n"); //user diagnostic output
             System.out.println("#######################################\n");
         }catch(Exception e)
         {
